@@ -12,12 +12,25 @@ import os
 from prettyprinter import pprint
 
 
-def merge_rules(tokens: list) -> dict:
-	rules = {}
+def merge_rules(rules: dict) -> dict:
+	merged = {}
 
-	pprint(tokens)
+	pprint(rules)
 
-	return rules
+	for rule, value in rules.items():
+		merged[rule] = ''
+
+		for token in value:
+			token_type = token[0]
+			token_val = token[1]
+
+			if token_type == 'WORD':
+				token_val = merged.get(token_val, rules[token_val]) # Add recursion
+
+			merged[rule] += r'{}'.format(token_val)
+
+	pprint(merged)
+	return merged
 
 
 def is_part_of_word(char):
