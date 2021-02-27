@@ -1,0 +1,11 @@
+STR = {'|".*'|"}
+WORD = {[a-zA-Z_]+[a-ZA-Z0-9_]*}
+NUMBER {\-?[0-9.]+}
+OP = {\+\-\*/%}
+
+NON_EXPR_VAL = (STR|NUMBER|WORD)
+VAL = (NONE_EXPR_VAL|EXPR)
+
+EXPR = NON_EXPR_VAL OP VAL
+VAR_DEF = WORD '=' VAL
+QUOTE = '\''
