@@ -9,25 +9,46 @@
 # Store the tokens by type and value.
 
 import os
+import re
 from prettyprinter import pprint
 
 
-def merge_rules(rules: dict) -> dict:
-	merged = {}
+def get_tokens_by_word(word):
+	global rule_tokens
 
+	for rule, value in rule_tokens.items():
+		if rule != word:
+			continue
+		return value
+
+
+def recursive_rule_parser(tokens) -> str:
+	global rule_tokens
+
+	if not tokens:
+		return ''
+
+	regex = r''
+	for token in tokens:
+		token_type = token[0]
+		token_val = token[1]
+
+		if token_type == 'EXACT':
+			regex += re.escape(token_val)
+		elif token_type == 'WORD':
+			regex += recursive_rule_parser(get_tokens_by_word(token_val))
+		elif token_type == 'REGEX':
+			regex += f'({token_val})'
+		else:
+			regex += token_val
+
+	return regex
+
+
+def merge_rules(rules: dict) -> dict:
 	pprint(rules)
 
-	for rule, value in rules.items():
-		merged[rule] = ''
-
-		for token in value:
-			token_type = token[0]
-			token_val = token[1]
-
-			if token_type == 'WORD':
-				token_val = merged.get(token_val, rules[token_val]) # Add recursion
-
-			merged[rule] += r'{}'.format(token_val)
+	merged = {rule: recursive_rule_parser(value) for rule, value in rules.items()}
 
 	pprint(merged)
 	return merged
@@ -126,6 +147,8 @@ def lex_rules(raw_rules: list) -> dict:
 
 
 def read_rules(file):
+	global rule_tokens
+
 	if os.path.isfile(f'{os.getcwd()}/{file}'):
 		with open(file, 'r') as f:
 			raw_rules = f.readlines()
@@ -140,6 +163,8 @@ def read_rules(file):
 def main():
 	read_rules('rules.grammar')
 
+
+rule_tokens = {}
 
 if __name__ == '__main__':
 	main()
