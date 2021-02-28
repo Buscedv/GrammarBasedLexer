@@ -5,7 +5,7 @@ OP = {[\+\-\*\/%]}
 VAL = (STR|NUMBER|WORD)
 
 EXPR = VAL (OP VAL)+
-VAR_DEF = WORD {\s*} '=' {\s*} VAL
-ANY = VAR_DEF|EXPR|VAL
-FUNCTION = WORD '(' (((ANY{,?}{\s*}) {[^,]})*)|ANY ')'
-ROUTE = '@' WORD '(' STR|WORD '):'
+
+var_def = WORD {\s*} '=' {\s*} VAL
+function = WORD '(' (','{\s?}VAL|VAL)* ')'
+route = '@' WORD '(' STR|WORD '):\n'

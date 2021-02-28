@@ -34,7 +34,7 @@ def recursive_rule_parser(tokens) -> str:
 		token_val = token[1]
 
 		if token_type == 'EXACT':
-			regex += re.escape(token_val)
+			regex += f'({re.escape(token_val)})'
 		elif token_type == 'WORD':
 			regex += recursive_rule_parser(get_tokens_by_word(token_val))
 		elif token_type == 'REGEX':
@@ -166,11 +166,10 @@ def lex(file: str, rules: dict) -> list:
 		with open(file, 'r') as f:
 			raw_source = f.readlines()
 
+		# Appends the last matching possibility as the token type.
 		for line in raw_source:
 			possible = [rule for rule, pattern in rules.items() if re.match(pattern, line.replace('\t', ''))]
-			print(line)
-			print(possible)
-			if possible:
+			if possible and possible[-1].lower() == possible[-1]:
 				tokens.append([possible[-1], line])
 
 	return tokens
