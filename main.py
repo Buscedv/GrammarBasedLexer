@@ -167,7 +167,9 @@ def lex(file: str, rules: dict) -> list:
 			raw_source = f.readlines()
 
 		for line in raw_source:
-			possible = [rule for rule, pattern in rules.items() if re.match(pattern, line)]
+			possible = [rule for rule, pattern in rules.items() if re.match(pattern, line.replace('\t', ''))]
+			print(line)
+			print(possible)
 			if possible:
 				tokens.append([possible[-1], line])
 
