@@ -1,7 +1,7 @@
 # TODO:
-# Read grammar rules.
-# Lex grammar rules.
-# Merge grammar rules.
+# Read grammar rules. X
+# Lex grammar rules. X
+# Merge grammar rules. X
 # Store in cache (local text file)?
 
 # Loop over source.
@@ -76,7 +76,7 @@ def lex_rules(raw_rules: list) -> dict:
 	}
 
 	for line in raw_rules:
-		line = line.replace("\\'", 'ESC_SINGLE_QUOTE').replace('\\"', 'ESC_QUOTE')
+		line = line.replace("\\'", 'ESC_SINGLE_QUOTE')
 		for char in line:
 			if rule_name_collect:
 				if char == '=':
@@ -154,14 +154,29 @@ def read_rules(file):
 			raw_rules = f.readlines()
 
 		rule_tokens = lex_rules(raw_rules)
-		rules = merge_rules(rule_tokens)
+		return merge_rules(rule_tokens)
+
+	return {}
 
 
-# cache_rules(rules)
+def lex(file: str, rules: dict) -> list:
+	tokens = []
+
+	if os.path.isfile(f'{os.getcwd()}/{file}'):
+		with open(file, 'r') as f:
+			raw_source = f.readlines()
+
+		for line in raw_source:
+			possible = [rule for rule, pattern in rules.items() if re.match(pattern, line)]
+			if possible:
+				tokens.append([possible[-1], line])
+
+	return tokens
 
 
 def main():
-	read_rules('rules.grammar')
+	rules = read_rules('rules.grammar')
+	pprint(lex('source.lang', rules))
 
 
 rule_tokens = {}
